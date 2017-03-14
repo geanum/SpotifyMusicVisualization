@@ -46,18 +46,9 @@ var REDIRECT_URI = 'http://localhost:8000/';
   } else {
     //localStorage.removeItem(stateKey); Removed to let browser remember state in case of refresh
     if (access_token) {
-      $.ajax({
-          url: 'https://api.spotify.com/v1/me',
-          headers: {
-            'Authorization': 'Bearer ' + access_token
-          },
-          success: function(response) {
-            console.log(response);
-            userProfile.innerHTML = response.id;
-            $('#login').hide();
-            $('#loggedin').show();
-          }
-      });
+      $('#login').hide();
+      $('#loggedin').show();
+      initSpotify(access_token);
     } else {  // Not logged in yet
         $('#login').show();
         $('#loggedin').hide();
