@@ -65,8 +65,7 @@ var loadSongs = (playlistID) => {
 
 var songTable = (list,element) => {
 
-  console.log(list);
-  console.log(element);
+  $(element + ' table').remove();
 
   var table = $('<table></table>');
 
