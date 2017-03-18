@@ -2,6 +2,7 @@
 var spotifyApi = new SpotifyWebApi();
 
 var userID;
+var currentPlaylist;
 
 var initSpotify = (accessToken) => {
 
@@ -53,6 +54,8 @@ var playlistTable = (list,element) => {
 
 var loadSongs = (playlistID) => {
 
+  console.log('PlaylistID ')
+
   spotifyApi.getPlaylistTracks(userID, playlistID)
   .then(function(data) {
     console.log(data);
@@ -78,6 +81,7 @@ var songTable = (list,element) => {
 
     $(row).on('click', function() {
       console.log(item.track.name);
+      makeRadial(item.track.id);
     });
     $(row).append('<td>' + item.track.name + '</td>');
     $(row).append('<td>' + item.track.artists[0].name + '</td>'); // only display one artist for now
@@ -85,5 +89,39 @@ var songTable = (list,element) => {
   })
 
   $(element).append(table);
+
+}
+
+var makeRadial = (id) => {
+  spotifyApi.getAudioFeaturesForTrack(id)
+  .then(function(data) {
+    console.log(data);
+
+    var radarChartOptions = {
+      w: width,
+      h: height,
+      margin: margin,
+      maxValue: 1,
+      levels: 5,
+      roundStrokes: true,
+      color: color,
+      opacityCircles: 0.1
+    };
+
+    d = [
+      {axis: 'Danceability', value: data.danceability},
+      {axis: 'Energy', value: data.energy},
+      {axis: 'Acousticness', value: data.acousticness},
+      {axis: 'Valence', value: data.valence},
+    ]
+
+    dat = [d];
+
+    //Call function to draw the Radar chart
+    RadarChart("#radial", dat, radarChartOptions)
+
+  }, function(err) {
+    console.log(err);
+  })
 
 }
