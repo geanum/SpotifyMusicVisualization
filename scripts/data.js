@@ -32,7 +32,7 @@ var playlistTable = (list,element) => {
   console.log(list);
   console.log(element);
 
-  var table = $('<table></table>');
+  var table = $('<table style="width:100%"></table>');
 
   $(table).append('<tr><th>PLAYLIST</th></tr>');
 
@@ -70,9 +70,9 @@ var songTable = (list,element) => {
 
   $(element + ' table').remove();
 
-  var table = $('<table></table>');
+  var table = $('<table width="100%" height="50vh"></table>');
 
-  $(table).append('<col width="500"><col width="180">');  // col widths set manually for now
+  $(table).append('<col width="50%"><col width="50%">');  // col widths set manually for now
   $(table).append('<tr><th>SONG</th><th>ARTIST</th></tr>');
 
   list.forEach(function(item) {
