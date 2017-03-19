@@ -4,20 +4,6 @@ var margin = {top: 100, right: 100, bottom: 100, left: 100},
 
 var offset = 0;
 var data = [  
-
-[{axis:"Jan",value: 700},
-{axis:"Feb",value: 1453},
-{axis:"March",value: 1300},
-{axis:"April",value: 1534},
-{axis:"May",value: 1534},
-{axis:"June",value: 1547},
-{axis:"July",value: 1100},
-{axis:"August",value: 1800},
-{axis:"September",value: 1700},
-{axis:"October",value: 1500},
-{axis:"November",value: 1000},
-{axis:"December",value: 1200}
-]
 ];
 
 
@@ -37,7 +23,7 @@ var radarChartOptions = {
 
 
 //Call function to draw the Radar chart
-RadarChart("#radial", data, radarChartOptions);
+//RadarChart("#radial", data, radarChartOptions);
 
 
 /////////// Inspired by the code of alangrafu ///////////
