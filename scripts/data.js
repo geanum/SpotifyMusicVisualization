@@ -3,7 +3,9 @@ var spotifyApi = new SpotifyWebApi();
 
 var userID;
 var currentPlaylist;
-var currentPlaylistSongs;
+
+var songsClicked = 0;
+var svg;
 
 var initSpotify = (accessToken) => {
 
@@ -60,8 +62,7 @@ var loadSongs = (playlistID) => {
   spotifyApi.getPlaylistTracks(userID, playlistID)
   .then(function(data) {
     console.log(data);
-    songTable(data.items,'#user-playlists-songs');
-    var songs = structurePlaylistSongs(data.items, songDataPoints);
+    songTable(data.items,'#user-playlists-songs')
   }, function(err) {
     console.log(err);
   })
@@ -83,7 +84,8 @@ var songTable = (list,element) => {
 
     $(row).on('click', function() {
       console.log(item.track.name);
-      makeRadial(item.track.id);
+      // makeRadial(item.track.id);
+      makeNovel(item.track.id);
     });
     $(row).append('<td>' + item.track.name + '</td>');
     $(row).append('<td>' + item.track.artists[0].name + '</td>'); // only display one artist for now
@@ -115,20 +117,9 @@ var makeRadial = (id) => {
       {axis: 'Energy', value: data.energy},
       {axis: 'Acousticness', value: data.acousticness},
       {axis: 'Valence', value: data.valence},
-      // {axis: 'Instrumentalness', value: data.instrumentalness},
-      // {axis: 'Speechiness', value: data.speechiness}
     ]
 
-    d2 = [
-      {axis: 'Danceability', value: scaleLoudness(data.loudness)},
-      {axis: 'Energy', value: scaleLoudness(data.loudness)},
-      {axis: 'Acousticness', value: scaleLoudness(data.loudness)},
-      {axis: 'Valence', value: scaleLoudness(data.loudness)},
-      // {axis: 'Instrumentalness', value: scaleLoudness(data.loudness)},
-      // {axis: 'Speechiness', value: scaleLoudness(data.loudness)}
-    ]
-
-    dat = [d,d2];
+    dat = [d];
 
     //Call function to draw the Radar chart
     RadarChart("#radial", dat, radarChartOptions)
@@ -136,139 +127,29 @@ var makeRadial = (id) => {
   }, function(err) {
     console.log(err);
   })
-
 }
 
-var scaleLoudness = (loudness) => {
-
-  loudness = loudness*(-1);
-
-  return loudness/(10+ loudness);
-
-}
-
-var structurePlaylistSongs = (allSongs, callback) => {
-
-  var listSongIDs = [];
-
-  var playListSongs = [];
-
-  allSongs.forEach(function(song) {
-    listSongIDs.push(song.track.id);
-  })
-
-  console.log(listSongIDs);
-
-  spotifyApi.getAudioFeaturesForTracks(listSongIDs)
+var makeNovel = (id) => {
+  console.log("Loading Audio Analysis");
+  spotifyApi.getAudioAnalysisForTrack(id)
   .then(function(data) {
+    // console.log(data);
+    // console.log(data.segments);
+    // console.log(data.track);
+    console.log("data has been retrieved");
 
-    data = data.audio_features;
+    // if (songsClicked == 0) {
+    //   svg = createNovelChart("#novel", data.track, data.segments);
+    //   songsClicked += 1;
+    // } else {
+    //   updateNovelChart(svg, data.track, data.segments);
+    // }
 
-    console.log(data);
+    createNovelChart("#novel", data.track, data.segments);
 
-
-    for (var i = 0; i < data.length; i++) {
-      console.log(i);
-      var song = {
-        name: allSongs[i].track.name,
-        id: allSongs[i].track.id,
-        popularity: allSongs[i].track.popularity,
-        duration: allSongs[i].track.duration_ms,
-        artists: allSongs[i].track.artists,
-        acousticness: data[i].acousticness,
-        danceability: data[i].danceability,
-        energy: data[i].energy,
-        instrumentalness: data[i].instrumentalness,
-        key: data[i].key,
-        liveness: data[i].liveness,
-        loudness: data[i].loudness, 
-        speechiness: data[i].speechiness,
-        tempo: data[i].tempo,
-        time_signature: data[i].time_signature,
-        valence: data[i].valence
-      }
-
-      playListSongs.push(song);
-    }
-
-    currentPlaylistSongs = playListSongs;
-    callback(playListSongs, 'danceability', 'popularity');
+    //create chart
+    //end loading animation
   }, function(err) {
     console.log(err)
-  })
-}
-
-// returns list of data points using parameterX and parameterY from song properties
-var songDataPoints = (listSongs, parameterX, parameterY) => {
-
-  var dataPoints = [];
-
-  console.log(parameterX);
-
-  listSongs.forEach(function(song) {
-    if(song.hasOwnProperty(parameterX) && song.hasOwnProperty(parameterY)) {
-      var point = [song[parameterX], song[parameterY]];
-      dataPoints.push(point);
-    }
-  })
-
-  makeScatterPlot(dataPoints);
-  return dataPoints;
-}
-
-var makeScatterPlot = (data) => {
-
-  var canvas_width = 500;
-  var canvas_height = 300;
-  var padding = 30;  // for chart edges
-
-  // Create scale functions
-  var xScale = d3.scaleLinear()  // xScale is width of graphic
-                  .domain([0, d3.max(data, function(d) {
-                      return d[0];  // input domain
-                  })])
-                  .range([padding, canvas_width - padding * 2]); // output range
-
-  var yScale = d3.scaleLinear()  // yScale is height of graphic
-                  .domain([0, d3.max(data, function(d) {
-                      return d[1];  // input domain
-                  })])
-                  .range([canvas_height - padding, padding]);  // remember y starts on top going down so we flip
-
-
-  // Create SVG element
-  var svg = d3.select("#scatter")  // This is where we put our vis
-      .append("svg")
-      .attr("width", canvas_width)
-      .attr("height", canvas_height)
-
-  // Create Circles
-  svg.selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")  // Add circle svg
-      .attr("cx", function(d) {
-          return xScale(d[0]);  // Circle's X
-      })
-      .attr("cy", function(d) {  // Circle's Y
-          return yScale(d[1]);
-      })
-      .attr("r", 2);  // radius
-
-  svg.append('g')
-        .attr('class', 'axisX')
-        .attr("transform", "translate(0," + (canvas_height - padding) +")")
-        .call(d3.axisBottom(xScale));
-
-  svg.append('g')
-      .attr('class', 'axisY')
-      .attr("transform", "translate(" + padding +",0)")
-      .call(d3.axisLeft(yScale))
-    .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', '0.71em')
-      .attr('fill', '#000')
-      .text('($)');
-  console.log(data);
+  });
 }
