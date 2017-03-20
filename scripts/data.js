@@ -155,11 +155,13 @@ var scaleLoudness = (loudness) => {
 var structurePlaylistSongs = (allSongs, callback) => {
 
   var listSongIDs = [];
+  var listAlbumIDs = []
 
   var playListSongs = [];
 
   allSongs.forEach(function(song) {
     listSongIDs.push(song.track.id);
+    listAlbumIDs.push(song.track.album.id)
   })
 
   console.log(listSongIDs);
@@ -184,6 +186,8 @@ var structurePlaylistSongs = (allSongs, callback) => {
         Popularity: allSongs[i].track.popularity,
         Duration: allSongs[i].track.duration_ms,
         Artists: allSongs[i].track.artists,
+        Album: allSongs[i].track.album,
+        DateAdded: allSongs[i].added_at,
         Acousticness: data[i].acousticness,
         Danceability: data[i].danceability,
         Energy: data[i].energy,
@@ -202,6 +206,7 @@ var structurePlaylistSongs = (allSongs, callback) => {
 
     currentPlaylistSongs = playListSongs;
     callback(playListSongs);
+    //getAlbumData();
   }, function(err) {
     console.log(err)
   })
@@ -393,3 +398,26 @@ var changeAxis = (axis, parameter) => {
       // });
 
 }
+
+
+// var getAlbumData = () => {
+
+//   var promises; // janky promises
+
+//   currentPlaylistSongs.forEach(function(song) {
+//     spotifyApi.getAlbum(song.Album.id)
+//     .then(function(data) {
+//       console.log(data);
+//       if (data)
+//         song.genre = data.genres;
+//       console.log(song.Name);
+//       console.log(song.genre);
+//       promises++;
+//     }, function(err) {
+//       console.log(err);
+//       promises++;
+//     })
+//   })
+
+//   while (promises < currentPlaylistSongs.length);
+// }
