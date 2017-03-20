@@ -55,6 +55,60 @@ th {
   width: 40%;
 }
 
+#scatter {
+  float: left;
+  text-align: center;
+  padding-top: 20px;
+}
+
+#scatter table {
+  margin: 0 auto;
+  border-spacing: 10px;
+  border-collapse: separate;
+}
+
+#scatter table td{
+  font-size: 10px;
+  background: #1e1e1e;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+#scatter #axisY td:hover{
+  color: orange;
+}
+
+#scatter #axisX td:hover{
+  color: lightblue;
+}
+
+#scatter svg {
+  padding-left: 10px;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: orange;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: lightblue;
+}
+
+.axisX path {
+  stroke: white;
+}
+
+.axisY path {
+  stroke: white;
+}
+
+.axisX {
+  stroke: white;
+}
+
+
+.axisY {
+  stroke: white;
+}
+
 table {
   border-collapse: collapse;
 }
