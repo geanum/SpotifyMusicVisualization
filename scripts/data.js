@@ -7,6 +7,9 @@ var currentPlaylistSongs = [];
 var scatterPlotX = 'Danceability';
 var scatterPlotY = 'Popularity';
 
+var songsClicked = 0;
+var svg;
+
 var initSpotify = (accessToken) => {
 
   spotifyApi.setAccessToken(accessToken);
@@ -93,6 +96,7 @@ var songTable = (list,element) => {
       console.log(item.track.name);
       makeRadial(item.track.id);
       row.addClass("selected-song");
+      makeNovel(item.track.id);
     });
     $(row).append('<td>' + item.track.name + '</td>');
     $(row).append('<td>' + item.track.artists[0].name + '</td>'); // only display one artist for now
@@ -124,20 +128,9 @@ var makeRadial = (id) => {
       {axis: 'Energy', value: data.energy},
       {axis: 'Acousticness', value: data.acousticness},
       {axis: 'Valence', value: data.valence},
-      // {axis: 'Instrumentalness', value: data.instrumentalness},
-      // {axis: 'Speechiness', value: data.speechiness}
     ]
 
-    d2 = [
-      {axis: 'Danceability', value: scaleLoudness(data.loudness)},
-      {axis: 'Energy', value: scaleLoudness(data.loudness)},
-      {axis: 'Acousticness', value: scaleLoudness(data.loudness)},
-      {axis: 'Valence', value: scaleLoudness(data.loudness)},
-      // {axis: 'Instrumentalness', value: scaleLoudness(data.loudness)},
-      // {axis: 'Speechiness', value: scaleLoudness(data.loudness)}
-    ]
-
-    dat = [d,d2];
+    dat = [d];
 
     //Call function to draw the Radar chart
     RadarChart("#radial", dat, radarChartOptions)
@@ -145,7 +138,6 @@ var makeRadial = (id) => {
   }, function(err) {
     console.log(err);
   })
-
 }
 
 var scaleLoudness = (loudness) => {
@@ -172,10 +164,19 @@ var structurePlaylistSongs = (allSongs, callback) => {
 
   spotifyApi.getAudioFeaturesForTracks(listSongIDs)
   .then(function(data) {
+    // console.log(data);
+    // console.log(data.segments);
+    // console.log(data.track);
+    console.log("data has been retrieved");
 
-    data = data.audio_features;
+    // if (songsClicked == 0) {
+    //   svg = createNovelChart("#novel", data.track, data.segments);
+    //   songsClicked += 1;
+    // } else {
+    //   updateNovelChart(svg, data.track, data.segments);
+    // }
 
-    console.log(data);
+    createNovelChart("#novel", data.track, data.segments);
 
 
     for (var i = 0; i < data.length; i++) {
@@ -213,7 +214,7 @@ var structurePlaylistSongs = (allSongs, callback) => {
     //getAlbumData();
   }, function(err) {
     console.log(err)
-  })
+  });
 }
 
 // returns list of data points using parameterX and parameterY from song properties

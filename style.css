@@ -55,6 +55,44 @@ th {
   width: 40%;
 }
 
+.line {
+  fill: none;
+  stroke-width: 2px;
+}
+
+.frame {
+  fill: none;
+  stroke: #000;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis line,
+.axis circle {
+  fill: none;
+  stroke: #777;
+  stroke-dasharray: 1,4;
+}
+
+.axis :last-of-type circle {
+  stroke: #333;
+  stroke-dasharray: none;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.legend {
+  font-size: 16px;
+}
+rect {
+  stroke-width: 2;
+}
+
 #scatter {
   float: left;
   text-align: center;
