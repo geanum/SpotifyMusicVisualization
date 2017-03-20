@@ -33,7 +33,7 @@ var playlistTable = (list,element) => {
   console.log(list);
   console.log(element);
 
-  var table = $('<table></table>');
+  var table = $('<table style="width:100%"></table>');
 
   $(table).append('<tr><th>PLAYLIST</th></tr>');
 
@@ -43,7 +43,9 @@ var playlistTable = (list,element) => {
 
     $(row).on('click', function() {
       console.log(item.id);
+      $(".selected-playlist").removeClass("selected-playlist");
       loadSongs(item.id);
+      row.addClass("selected-playlist")
     });
     $(row).append('<td>' + item.name + '</td>');
     $(table).append(row);
@@ -72,9 +74,9 @@ var songTable = (list,element) => {
 
   $(element + ' table').remove();
 
-  var table = $('<table></table>');
+  var table = $('<table width="100%" height="50vh"></table>');
 
-  $(table).append('<col width="500"><col width="180">');  // col widths set manually for now
+  $(table).append('<col width="50%"><col width="50%">');  // col widths set manually for now
   $(table).append('<tr><th>SONG</th><th>ARTIST</th></tr>');
 
   list.forEach(function(item) {
@@ -82,8 +84,10 @@ var songTable = (list,element) => {
     var row = $('<tr></tr>');
 
     $(row).on('click', function() {
+      $(".selected-song").removeClass("selected-song");
       console.log(item.track.name);
       makeRadial(item.track.id);
+      row.addClass("selected-song");
     });
     $(row).append('<td>' + item.track.name + '</td>');
     $(row).append('<td>' + item.track.artists[0].name + '</td>'); // only display one artist for now
