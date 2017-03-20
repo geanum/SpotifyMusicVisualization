@@ -4,8 +4,8 @@ var spotifyApi = new SpotifyWebApi();
 var userID;
 var currentPlaylist;
 var currentPlaylistSongs = [];
-var scatterPlotX;
-var scatterPlotY;
+var scatterPlotX = 'Danceability';
+var scatterPlotY = 'Popularity';
 
 var initSpotify = (accessToken) => {
 
@@ -64,8 +64,6 @@ var loadSongs = (playlistID) => {
     console.log(data);
     songTable(data.items,'#user-playlists-songs');
     structurePlaylistSongs(data.items, function(data) {
-      scatterPlotX = 'Danceability';
-      scatterPlotY = 'Popularity';
       var dataPoints = songDataPoints(data, scatterPlotX, scatterPlotY);
       makeScatterPlot(dataPoints);
     });
@@ -310,7 +308,7 @@ var appendSelect = (element, axis) => {
 
   var values = ['Danceability', 'Tempo', 'Energy', 'Popularity', 'Valence'];
 
-  var table = $('<table></table>');
+  var table = $('<table id="axis'+ axis + '"></table>');
   var row = $('<tr></tr>');
 
   values.forEach(function(item) {
@@ -356,12 +354,6 @@ var changeAxis = (axis, parameter) => {
 
                   var svg = d3.select("#scatter svg")
 
-  svg.selectAll("circle").remove()
-    .transition()
-      .duration(750)
-
-  console.log(data);
-
   svg.select(".axisX") // change the y axis
     .transition()
       .duration(750)
@@ -375,19 +367,29 @@ var changeAxis = (axis, parameter) => {
   // Create Circles
   svg.selectAll("circle")
       .data(data)
-      .enter()
-      .append("circle")  // Add circle svg
+      .transition()  // Transition from old to new
+      .duration(1000)  // Length of animation
+      // .each("start", function() {  // Start animation
+      //     d3.select(this)  // 'this' means the current element
+      //         .attr("fill", "red")  // Change color
+      //         .attr("r", 5);  // Change size
+      // })
+      .delay(function(d, i) {
+          return i / data.length * 500;  // Dynamic delay (i.e. each item delays a little longer)
+      })
+      //.ease("linear")  // Transition easing - default 'variable' (i.e. has acceleration), also: 'circle', 'elastic', 'bounce', 'linear'
       .attr("cx", function(d) {
           return xScale(d[0]);  // Circle's X
       })
-      .attr("cy", function(d) {  // Circle's Y
-          return yScale(d[1]);
-      })
-      .attr("r", 0)  // radius
-      .attr("fill", "steelblue")
-      // .style("filter" , "url(#glow)")
-      .transition()
-        .duration(750)
-        .attr("r", 2);
+      .attr("cy", function(d) {
+          return yScale(d[1]);  // Circle's Y
+      });
+      // .each("end", function() {  // End animation
+      //     d3.select(this)  // 'this' means the current element
+      //         .transition()
+      //         .duration(500)
+      //         .attr("fill", "black")  // Change color
+      //         .attr("r", 2);  // Change radius
+      // });
 
 }
