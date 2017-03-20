@@ -3,7 +3,9 @@ var spotifyApi = new SpotifyWebApi();
 
 var userID;
 var currentPlaylist;
-var currentPlaylistSongs;
+var currentPlaylistSongs = [];
+var scatterPlotX;
+var scatterPlotY;
 
 var initSpotify = (accessToken) => {
 
@@ -61,7 +63,12 @@ var loadSongs = (playlistID) => {
   .then(function(data) {
     console.log(data);
     songTable(data.items,'#user-playlists-songs');
-    var songs = structurePlaylistSongs(data.items, songDataPoints);
+    structurePlaylistSongs(data.items, function(data) {
+      scatterPlotX = 'Danceability';
+      scatterPlotY = 'Popularity';
+      var dataPoints = songDataPoints(data, scatterPlotX, scatterPlotY);
+      makeScatterPlot(dataPoints);
+    });
   }, function(err) {
     console.log(err);
   })
@@ -168,31 +175,35 @@ var structurePlaylistSongs = (allSongs, callback) => {
 
 
     for (var i = 0; i < data.length; i++) {
-      console.log(i);
+
+      if(!data[i]) { // if features returns null
+        data[i] = {};
+      }
+
       var song = {
-        name: allSongs[i].track.name,
+        Name: allSongs[i].track.name,
         id: allSongs[i].track.id,
-        popularity: allSongs[i].track.popularity,
-        duration: allSongs[i].track.duration_ms,
-        artists: allSongs[i].track.artists,
-        acousticness: data[i].acousticness,
-        danceability: data[i].danceability,
-        energy: data[i].energy,
-        instrumentalness: data[i].instrumentalness,
-        key: data[i].key,
-        liveness: data[i].liveness,
-        loudness: data[i].loudness, 
-        speechiness: data[i].speechiness,
-        tempo: data[i].tempo,
+        Popularity: allSongs[i].track.popularity,
+        Duration: allSongs[i].track.duration_ms,
+        Artists: allSongs[i].track.artists,
+        Acousticness: data[i].acousticness,
+        Danceability: data[i].danceability,
+        Energy: data[i].energy,
+        Instrumentalness: data[i].instrumentalness,
+        Key: data[i].key,
+        Liveness: data[i].liveness,
+        Loudness: data[i].loudness, 
+        Speechiness: data[i].speechiness,
+        Tempo: data[i].tempo,
         time_signature: data[i].time_signature,
-        valence: data[i].valence
+        Valence: data[i].valence
       }
 
       playListSongs.push(song);
     }
 
     currentPlaylistSongs = playListSongs;
-    callback(playListSongs, 'danceability', 'popularity');
+    callback(playListSongs);
   }, function(err) {
     console.log(err)
   })
@@ -212,16 +223,14 @@ var songDataPoints = (listSongs, parameterX, parameterY) => {
     }
   })
 
-  makeScatterPlot(dataPoints);
   return dataPoints;
 }
 
 var makeScatterPlot = (data) => {
 
-  var canvas_width = 500;
-  var canvas_height = 300;
+  var canvas_width = 700;
+  var canvas_height = 350;
   var padding = 30;  // for chart edges
-
   // Create scale functions
   var xScale = d3.scaleLinear()  // xScale is width of graphic
                   .domain([0, d3.max(data, function(d) {
@@ -235,12 +244,46 @@ var makeScatterPlot = (data) => {
                   })])
                   .range([canvas_height - padding, padding]);  // remember y starts on top going down so we flip
 
+  if (d3.select('#scatter svg').empty()) {
 
-  // Create SVG element
-  var svg = d3.select("#scatter")  // This is where we put our vis
-      .append("svg")
-      .attr("width", canvas_width)
-      .attr("height", canvas_height)
+    appendSelect('#scatter', 'Y');
+    // Create SVG element
+    var svg = d3.select("#scatter")  // This is where we put our vis
+        .append("svg")
+        .attr("width", canvas_width)
+        .attr("height", canvas_height)
+    
+    svg.append('g')
+          .attr('class', 'axisX')
+          .attr("transform", "translate(0," + (canvas_height - padding) +")")
+          .call(d3.axisBottom(xScale));
+
+    svg.append('g')
+        .attr('class', 'axisY')
+        .attr("transform", "translate(" + padding +",0)")
+        .call(d3.axisLeft(yScale))
+
+    appendSelect('#scatter', 'X');
+  }
+
+
+  var svg = d3.select("#scatter svg")
+
+  svg.selectAll("circle").remove()
+    .transition()
+      .duration(750)
+
+  console.log(data);
+
+  svg.select(".axisX") // change the y axis
+    .transition()
+      .duration(750)
+      .call(d3.axisBottom(xScale))
+
+  svg.select(".axisY") // change the y axis
+    .transition()
+      .duration(750)
+      .call(d3.axisLeft(yScale))
 
   // Create Circles
   svg.selectAll("circle")
@@ -253,22 +296,98 @@ var makeScatterPlot = (data) => {
       .attr("cy", function(d) {  // Circle's Y
           return yScale(d[1]);
       })
-      .attr("r", 2);  // radius
+      .attr("r", 0)  // radius
+      .attr("fill", "steelblue")
+      // .style("filter" , "url(#glow)")
+      .transition()
+        .duration(750)
+        .attr("r", 2);
 
-  svg.append('g')
-        .attr('class', 'axisX')
-        .attr("transform", "translate(0," + (canvas_height - padding) +")")
-        .call(d3.axisBottom(xScale));
-
-  svg.append('g')
-      .attr('class', 'axisY')
-      .attr("transform", "translate(" + padding +",0)")
-      .call(d3.axisLeft(yScale))
-    .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', '0.71em')
-      .attr('fill', '#000')
-      .text('($)');
   console.log(data);
+}
+
+var appendSelect = (element, axis) => {
+
+  var values = ['Danceability', 'Tempo', 'Energy', 'Popularity', 'Valence'];
+
+  var table = $('<table></table>');
+  var row = $('<tr></tr>');
+
+  values.forEach(function(item) {
+
+    var col = $('<td>' + item + '</td>')
+
+    $(col).on('click', function() {
+      console.log(item);
+      changeAxis(axis, item);
+    });
+    $(row).append(col)
+  })
+
+  $(table).append(row);
+
+  $(element).append(table);
+}
+
+var changeAxis = (axis, parameter) => {
+
+  if (axis == 'X') 
+    scatterPlotX = parameter;
+  if (axis == 'Y') 
+    scatterPlotY = parameter;
+
+  data = songDataPoints(currentPlaylistSongs, scatterPlotX, scatterPlotY);
+
+  var canvas_width = 700;
+  var canvas_height = 350;
+  var padding = 30;  // for chart edges
+
+  var xScale = d3.scaleLinear()  // xScale is width of graphic
+                  .domain([0, d3.max(data, function(d) {
+                      return d[0];  // input domain
+                  })])
+                  .range([padding, canvas_width - padding * 2]); // output range
+
+  var yScale = d3.scaleLinear()  // yScale is height of graphic
+                  .domain([0, d3.max(data, function(d) {
+                      return d[1];  // input domain
+                  })])
+                  .range([canvas_height - padding, padding]);  // remember y starts on top going down so we flip
+
+                  var svg = d3.select("#scatter svg")
+
+  svg.selectAll("circle").remove()
+    .transition()
+      .duration(750)
+
+  console.log(data);
+
+  svg.select(".axisX") // change the y axis
+    .transition()
+      .duration(750)
+      .call(d3.axisBottom(xScale))
+
+  svg.select(".axisY") // change the y axis
+    .transition()
+      .duration(750)
+      .call(d3.axisLeft(yScale))
+
+  // Create Circles
+  svg.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")  // Add circle svg
+      .attr("cx", function(d) {
+          return xScale(d[0]);  // Circle's X
+      })
+      .attr("cy", function(d) {  // Circle's Y
+          return yScale(d[1]);
+      })
+      .attr("r", 0)  // radius
+      .attr("fill", "steelblue")
+      // .style("filter" , "url(#glow)")
+      .transition()
+        .duration(750)
+        .attr("r", 2);
+
 }
