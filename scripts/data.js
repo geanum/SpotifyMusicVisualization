@@ -164,21 +164,9 @@ var structurePlaylistSongs = (allSongs, callback) => {
 
   spotifyApi.getAudioFeaturesForTracks(listSongIDs)
   .then(function(data) {
-    // console.log(data);
-    // console.log(data.segments);
-    // console.log(data.track);
-    console.log("data has been retrieved");
 
-    // if (songsClicked == 0) {
-    //   svg = createNovelChart("#novel", data.track, data.segments);
-    //   songsClicked += 1;
-    // } else {
-    //   updateNovelChart(svg, data.track, data.segments);
-    // }
-
-    createNovelChart("#novel", data.track, data.segments);
-
-
+    data = data.audio_features;
+    
     for (var i = 0; i < data.length; i++) {
 
       if(!data[i]) { // if features returns null
@@ -220,6 +208,7 @@ var structurePlaylistSongs = (allSongs, callback) => {
 // returns list of data points using parameterX and parameterY from song properties
 var songDataPoints = (listSongs, parameterX, parameterY) => {
 
+  console.log(listSongs);
   var dataPoints = [];
 
   console.log(parameterX);
@@ -404,6 +393,30 @@ var changeAxis = (axis, parameter) => {
 
 }
 
+var makeNovel = (id) => {
+  console.log("Loading Audio Analysis");
+  spotifyApi.getAudioAnalysisForTrack(id)
+  .then(function(data) {
+    // console.log(data);
+    // console.log(data.segments);
+    // console.log(data.track);
+    console.log("data has been retrieved");
+
+    // if (songsClicked == 0) {
+    //   svg = createNovelChart("#novel", data.track, data.segments);
+    //   songsClicked += 1;
+    // } else {
+    //   updateNovelChart(svg, data.track, data.segments);
+    // }
+
+    createNovelChart("#novel", data.track, data.segments);
+
+    //create chart
+    //end loading animation
+  }, function(err) {
+    console.log(err)
+  });
+}
 
 // var getAlbumData = () => {
 
