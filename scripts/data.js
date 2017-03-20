@@ -42,7 +42,9 @@ var playlistTable = (list,element) => {
 
     $(row).on('click', function() {
       console.log(item.id);
+      $(".selected").removeClass("selected-playlist");
       loadSongs(item.id);
+      row.addClass("selected-playlist")
     });
     $(row).append('<td>' + item.name + '</td>');
     $(table).append(row);
@@ -80,8 +82,10 @@ var songTable = (list,element) => {
     var row = $('<tr></tr>');
 
     $(row).on('click', function() {
+      $(".selected-song").removeClass("selected-song");
       console.log(item.track.name);
       makeRadial(item.track.id);
+      row.addClass("selected-song");
     });
     $(row).append('<td>' + item.track.name + '</td>');
     $(row).append('<td>' + item.track.artists[0].name + '</td>'); // only display one artist for now
