@@ -294,11 +294,24 @@ var makeScatterPlot = (data) => {
           return yScale(d[1]);
       })
       .attr("r", 0)  // radius
-      .attr("fill", "steelblue")
+      .attr("fill", "#1db954")
+      .on('click', function(d,i) {
+        selectedSong = currentPlaylistSongs[i];
+        makeNovel(selectedSong.id);
+      })
+      .on('mouseover', function(d,i) {
+        d3.select(this)
+          .attr("r", 5)
+
+      })
+      .on('mouseout', function(d,i) {
+        d3.select(this)
+          .attr("r", 3)
+      })
       // .style("filter" , "url(#glow)")
       .transition()
         .duration(750)
-        .attr("r", 2);
+        .attr("r", 3);
 
   console.log(data);
 }
@@ -312,14 +325,24 @@ var appendSelect = (element, axis) => {
 
   values.forEach(function(item) {
 
-    var col = $('<td>' + item + '</td>')
+    var col = $('<td id=' + item + axis + '>' + item + '</td>');
 
     $(col).on('click', function() {
+
+      $(".selected-parameter" + axis).removeClass("selected-parameter" + axis);
       console.log(item);
       changeAxis(axis, item);
+      col.addClass("selected-parameter" + axis);
     });
     $(row).append(col)
   })
+
+  if (axis == 'Y') {
+    console.log("LOLOL")
+    $('#PopularityY').addClass("selected-parameter" + axis);
+  }
+  if (axis == 'X')
+    $('#DanceabilityX').addClass("selected-parameter" + axis);
 
   $(table).append(row);
 

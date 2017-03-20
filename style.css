@@ -110,6 +110,7 @@ rect {
   background: #1e1e1e;
   border-radius: 5px;
   padding: 5px;
+  max-width: none;
 }
 
 #scatter #axisY td:hover{
@@ -176,4 +177,14 @@ tr {
 .selected-song {
   background-color: #4d4d4d;
   color: #1db954;
+}
+
+.selected-parameterX {
+  background: #1db954;
+  color: lightblue;
+}
+
+.selected-parameterY {
+  color: orange;
+  background: #1db954;
 }
