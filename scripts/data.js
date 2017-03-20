@@ -42,7 +42,7 @@ var playlistTable = (list,element) => {
 
     $(row).on('click', function() {
       console.log(item.id);
-      $(".selected").removeClass("selected-playlist");
+      $(".selected-playlist").removeClass("selected-playlist");
       loadSongs(item.id);
       row.addClass("selected-playlist")
     });
