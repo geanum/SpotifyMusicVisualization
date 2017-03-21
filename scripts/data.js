@@ -152,7 +152,12 @@ var averagePlaylist = (songs) => {
   var totalSpeechiness = 0;
 
   songs.forEach(function(song) {
+
+    if (song.id == null) 
+      return;
+
     console.log(song);
+    console.log(song.Danceability);
     total++;
     totalValence += song.Valence;
     totalEnergy += song.Energy;
