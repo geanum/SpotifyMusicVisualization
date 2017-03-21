@@ -114,8 +114,8 @@ var makeRadial = (playListSongs) => {
   var data = averagePlaylist(currentPlaylistSongs)
 
   var radarChartOptions = {
-    w: width,
-    h: height,
+    w: 350,
+    h: 275,
     margin: margin,
     maxValue: 0.5,
     levels: 5,

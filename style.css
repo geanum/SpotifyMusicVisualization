@@ -267,6 +267,9 @@ tr {
   width: 50%;
 }
 
+#radial text {
+  fill: white;
+}
 .d3-tip {
   line-height: 1;
   font-weight: bold;
