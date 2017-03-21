@@ -279,7 +279,9 @@ var makeScatterPlot = (data) => {
       console.log(d);
       console.log(currentPlaylistSongs[i]);
       return "<span style='color:white'>" + currentPlaylistSongs[i].Name + "</span>" 
-              + "<p style='color:white'>" + currentPlaylistSongs[i].Artists[0].name + "</p>";
+              + "<p style='color:white'>" + currentPlaylistSongs[i].Artists[0].name + "</p>"
+              + "<p style='color:white'>" + scatterPlotX + ":" + currentPlaylistSongs[i][scatterPlotX] + "</p>"
+              + "<p style='color:white'>" + scatterPlotY + ":" + currentPlaylistSongs[i][scatterPlotY] + "</p>";
   })
 
 
@@ -305,7 +307,6 @@ var makeScatterPlot = (data) => {
         .attr("width", canvas_width)
         .attr("height", canvas_height)
 
-    svg.call(tip);
     
     svg.append('g')
           .attr('class', 'axisX')
@@ -320,8 +321,9 @@ var makeScatterPlot = (data) => {
     appendSelect('#scatter', 'X');
   }
 
-
   var svg = d3.select("#scatter svg")
+
+  svg.call(tip);
 
   svg.selectAll("circle").remove()
     .transition()
@@ -357,20 +359,21 @@ var makeScatterPlot = (data) => {
         makeNovel(selectedSong.id);
       })
       .on('mouseover', function(d,i) {
+        console.log('lol');
         tip.show(d,i);
         d3.select(this)
-          .attr("r", 5)
+          .attr("r", 6)
 
       })
       .on('mouseout', function(d,i) {
         tip.hide(d,i);
         d3.select(this)
-          .attr("r", 3)
+          .attr("r", 3.5)
       })
       // .style("filter" , "url(#glow)")
       .transition()
         .duration(750)
-        .attr("r", 2);
+        .attr("r", 3.5);
 
   console.log(data);
 }
