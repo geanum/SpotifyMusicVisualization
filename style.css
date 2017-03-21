@@ -55,6 +55,13 @@ th {
   width: 40%;
 }
 
+#novel {
+  float: left;
+  width: 40%;
+  padding-left: 8%;
+  height: 50vh;
+}
+
 .line {
   fill: none;
   stroke-width: 2px;
@@ -94,9 +101,11 @@ rect {
 }
 
 #scatter {
+  width: 50%;
   float: left;
   text-align: center;
   padding-top: 20px;
+  height: 40vh;
 }
 
 #scatter table {
@@ -110,6 +119,7 @@ rect {
   background: #1e1e1e;
   border-radius: 5px;
   padding: 5px;
+  max-width: none;
 }
 
 #scatter #axisY td:hover{
@@ -162,6 +172,7 @@ td {
 }
 
 tr {
+  cursor: pointer;
   background-color: #1a1a1a;
   border-bottom: thin solid grey;
 }
@@ -248,4 +259,10 @@ tr {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+}
+
+#radial {
+  float: left;
+  height: 50vh;
+  width: 50%;
 }
