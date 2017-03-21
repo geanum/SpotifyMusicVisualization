@@ -29,6 +29,8 @@ var loadPlayLists = () => {
 
   }, function(err) {
     console.log(err);
+    displayModal();
+
   })
 }
 
@@ -137,6 +139,8 @@ var makeRadial = (id) => {
 
   }, function(err) {
     console.log(err);
+        displayModal();
+
   })
 }
 
@@ -202,6 +206,8 @@ var structurePlaylistSongs = (allSongs, callback) => {
     //getAlbumData();
   }, function(err) {
     console.log(err)
+    displayModal();
+
   });
 }
 
@@ -295,23 +301,10 @@ var makeScatterPlot = (data) => {
       })
       .attr("r", 0)  // radius
       .attr("fill", "#1db954")
-      .on('click', function(d,i) {
-        selectedSong = currentPlaylistSongs[i];
-        makeNovel(selectedSong.id);
-      })
-      .on('mouseover', function(d,i) {
-        d3.select(this)
-          .attr("r", 5)
-
-      })
-      .on('mouseout', function(d,i) {
-        d3.select(this)
-          .attr("r", 3)
-      })
       // .style("filter" , "url(#glow)")
       .transition()
         .duration(750)
-        .attr("r", 3);
+        .attr("r", 2);
 
   console.log(data);
 }
@@ -325,24 +318,14 @@ var appendSelect = (element, axis) => {
 
   values.forEach(function(item) {
 
-    var col = $('<td id=' + item + axis + '>' + item + '</td>');
+    var col = $('<td>' + item + '</td>')
 
     $(col).on('click', function() {
-
-      $(".selected-parameter" + axis).removeClass("selected-parameter" + axis);
       console.log(item);
       changeAxis(axis, item);
-      col.addClass("selected-parameter" + axis);
     });
     $(row).append(col)
   })
-
-  if (axis == 'Y') {
-    console.log("LOLOL")
-    $('#PopularityY').addClass("selected-parameter" + axis);
-  }
-  if (axis == 'X')
-    $('#DanceabilityX').addClass("selected-parameter" + axis);
 
   $(table).append(row);
 
@@ -418,14 +401,27 @@ var changeAxis = (axis, parameter) => {
 
 var makeNovel = (id) => {
   console.log("Loading Audio Analysis");
+  if (songsClicked == 0) {
+    var svg = d3.select("#novel").append("svg")
+      .attr("width", 500)
+      .attr("height", 500)
+      .style("background", "#1a1a1a")
+      .style("text-align", "center");
+    songsClicked += 1;
+    createLoader();
+  }
+
   spotifyApi.getAudioAnalysisForTrack(id)
   .then(function(data) {
     // console.log(data);
     // console.log(data.segments);
     // console.log(data.track);
+    if (songsClicked == 0)
+      removeLoader();
     console.log("data has been retrieved");
 
-    // if (songsClicked == 0) {
+
+
     //   svg = createNovelChart("#novel", data.track, data.segments);
     //   songsClicked += 1;
     // } else {
@@ -433,11 +429,11 @@ var makeNovel = (id) => {
     // }
 
     createNovelChart("#novel", data.track, data.segments);
-
     //create chart
     //end loading animation
   }, function(err) {
     console.log(err)
+    displayModal();
   });
 }
 
