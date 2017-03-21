@@ -189,6 +189,16 @@ tr {
   color: #1db954;
 }
 
+.selected-parameterX {
+  background: #1db954;
+  color: lightblue;
+}
+
+.selected-parameterY {
+  color: orange;
+  background: #1db954;
+}
+
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */

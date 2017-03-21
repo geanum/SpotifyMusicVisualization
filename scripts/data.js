@@ -379,19 +379,23 @@ var appendSelect = (element, axis) => {
 
   values.forEach(function(item) {
 
-    var col = $('<td>' + item + '</td>')
+    var col = $('<td id=' + item + axis + '>' + item + '</td>');
 
     $(col).on('click', function() {
+      $(".selected-parameter" + axis).removeClass("selected-parameter" + axis);
       console.log(item);
       changeAxis(axis, item);
+      col.addClass("selected-parameter" + axis);
     });
     $(row).append(col)
   })
 
-  if (axis == 'Y') 
-    $('#PopularityY').addClass("selected-parameter" + axis);
-  if (axis == 'X')
-    $('#DanceabilityX').addClass("selected-parameter" + axis);
+  $(document).ready(function() {
+    if (axis == 'Y') 
+      $('#PopularityY').addClass("selected-parameter" + axis);
+    if (axis == 'X')
+      $('#DanceabilityX').addClass("selected-parameter" + axis);
+  })
 
   $(table).append(row);
 
