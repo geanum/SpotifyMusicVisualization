@@ -73,6 +73,7 @@ var loadSongs = (playlistID) => {
     structurePlaylistSongs(data.items, function(data) {
       var dataPoints = songDataPoints(data, scatterPlotX, scatterPlotY);
       makeScatterPlot(dataPoints);
+      makeRadial(data);
     });
   }, function(err) {
     console.log(err);
@@ -96,7 +97,6 @@ var songTable = (list,element) => {
     $(row).on('click', function() {
       $(".selected-song").removeClass("selected-song");
       console.log(item.track.name);
-      makeRadial(item.track.id);
       row.addClass("selected-song");
       makeNovel(item.track.id);
     });
@@ -109,39 +109,71 @@ var songTable = (list,element) => {
 
 }
 
-var makeRadial = (id) => {
-  spotifyApi.getAudioFeaturesForTrack(id)
-  .then(function(data) {
-    console.log(data);
+var makeRadial = (playListSongs) => {
 
-    var radarChartOptions = {
-      w: width,
-      h: height,
-      margin: margin,
-      maxValue: 1,
-      levels: 5,
-      roundStrokes: true,
-      color: color,
-      opacityCircles: 0.1
-    };
+  var data = averagePlaylist(currentPlaylistSongs)
 
-    d = [
-      {axis: 'Danceability', value: data.danceability},
-      {axis: 'Energy', value: data.energy},
-      {axis: 'Acousticness', value: data.acousticness},
-      {axis: 'Valence', value: data.valence},
-    ]
+  var radarChartOptions = {
+    w: width,
+    h: height,
+    margin: margin,
+    maxValue: 0.5,
+    levels: 5,
+    roundStrokes: true,
+    color: color,
+    opacityCircles: 0.1
+  };
 
-    dat = [d];
+  console.log(data.danceability)
 
-    //Call function to draw the Radar chart
-    RadarChart("#radial", dat, radarChartOptions)
+  d = [
+    {axis: 'Danceability', value: data.danceability},
+    {axis: 'Energy', value: data.energy},
+    {axis: 'Acousticness', value: data.acousticness},
+    {axis: 'Valence', value: data.valence},
+    {axis: 'Instrumentalness', value: data.instrumentalness},
+    {axis: 'Speechiness', value: data.speechiness}
+  ]
 
-  }, function(err) {
-    console.log(err);
-        displayModal();
+  dat = [d];
 
+  //Call function to draw the Radar chart
+  RadarChart("#radial", dat, radarChartOptions)
+}
+
+var averagePlaylist = (songs) => {
+
+  var total = songs.length;
+  var totalValence = 0;
+  var totalEnergy = 0;
+  var totalDanceability = 0;
+  var totalAcousticness = 0;
+  var totalInstrumentalness = 0;
+  var totalSpeechiness = 0;
+
+  songs.forEach(function(song) {
+    console.log(song);
+    total++;
+    totalValence += song.Valence;
+    totalEnergy += song.Energy;
+    totalDanceability += song.Danceability;
+    totalAcousticness += song.Acousticness;
+    totalInstrumentalness += song.Instrumentalness;
+    totalSpeechiness += song.Speechiness;
   })
+
+  console.log(totalDanceability);
+
+  var data = {
+    danceability: totalDanceability/total,
+    valence: totalValence/total,
+    energy: totalEnergy/total,
+    acousticness: totalAcousticness/total,
+    instrumentalness: totalInstrumentalness/total,
+    speechiness: totalSpeechiness/total
+  }
+
+  return data;
 }
 
 var scaleLoudness = (loudness) => {
@@ -234,6 +266,18 @@ var makeScatterPlot = (data) => {
   var canvas_width = 700;
   var canvas_height = 350;
   var padding = 30;  // for chart edges
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d,i) {
+      console.log(d);
+      console.log(currentPlaylistSongs[i]);
+      return "<span style='color:white'>" + currentPlaylistSongs[i].Name + "</span>" 
+              + "<p style='color:white'>" + currentPlaylistSongs[i].Artists[0].name + "</p>";
+  })
+
+
   // Create scale functions
   var xScale = d3.scaleLinear()  // xScale is width of graphic
                   .domain([0, d3.max(data, function(d) {
@@ -255,6 +299,8 @@ var makeScatterPlot = (data) => {
         .append("svg")
         .attr("width", canvas_width)
         .attr("height", canvas_height)
+
+    svg.call(tip);
     
     svg.append('g')
           .attr('class', 'axisX')
@@ -301,6 +347,21 @@ var makeScatterPlot = (data) => {
       })
       .attr("r", 0)  // radius
       .attr("fill", "#1db954")
+      .on('click', function(d,i) {
+        selectedSong = currentPlaylistSongs[i];
+        makeNovel(selectedSong.id);
+      })
+      .on('mouseover', function(d,i) {
+        tip.show(d,i);
+        d3.select(this)
+          .attr("r", 5)
+
+      })
+      .on('mouseout', function(d,i) {
+        tip.hide(d,i);
+        d3.select(this)
+          .attr("r", 3)
+      })
       // .style("filter" , "url(#glow)")
       .transition()
         .duration(750)
@@ -326,6 +387,11 @@ var appendSelect = (element, axis) => {
     });
     $(row).append(col)
   })
+
+  if (axis == 'Y') 
+    $('#PopularityY').addClass("selected-parameter" + axis);
+  if (axis == 'X')
+    $('#DanceabilityX').addClass("selected-parameter" + axis);
 
   $(table).append(row);
 
