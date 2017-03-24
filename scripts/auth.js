@@ -3,7 +3,7 @@
 
 // Client API Request stuff
 var CLIENT_ID = '0597f4f7a5524842a9066443c4a80408';
-var REDIRECT_URI = 'http://localhost:8000/'; 
+var REDIRECT_URI = 'https://geanum.github.io/SpotifyMusicVisualization/'; 
 
 (function() {
 
