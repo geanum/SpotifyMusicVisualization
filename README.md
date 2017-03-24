@@ -1,15 +1,10 @@
 # Spotify Music Visualization
 
+https://geanum.github.io/SpotifyMusicVisualization/
+
 This is a javascript application that is used to help visualize a user's Spotify songs and playlists.
 This was developed by the four of us over a period of a about a week for our Information Interfaces course.
 The application uses Spotify's development API and D3.js to power all of its visualization tools. 
-
-
-## How to Run
-
-Use any sort of HTTP server to serve up the application's files. If you have python installed, you can just use the command 
-``` python -m SimpleHTTPServer ``` in the application's directory. Once the server is running, simply navigate your browser to
-the appropriate URL ('localhost:8000' is default for the python server). The application was developed to be ran best on Chrome. 
 
 ## Features
 
