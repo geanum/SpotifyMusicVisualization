@@ -64,11 +64,8 @@ var playlistTable = (list,element) => {
 
 var loadSongs = (playlistID) => {
 
-  console.log('PlaylistID ')
-
   spotifyApi.getPlaylistTracks(userID, playlistID)
   .then(function(data) {
-    console.log(data);
     songTable(data.items,'#user-playlists-songs');
     structurePlaylistSongs(data.items, function(data) {
       var dataPoints = songDataPoints(data, scatterPlotX, scatterPlotY);
@@ -96,7 +93,6 @@ var songTable = (list,element) => {
 
     $(row).on('click', function() {
       $(".selected-song").removeClass("selected-song");
-      console.log(item.track.name);
       row.addClass("selected-song");
       makeNovel(item.track.id);
     });
@@ -123,8 +119,6 @@ var makeRadial = (playListSongs) => {
     color: color,
     opacityCircles: 0.1
   };
-
-  console.log(data.danceability)
 
   d = [
     {axis: 'Danceability', value: data.danceability},
@@ -156,8 +150,6 @@ var averagePlaylist = (songs) => {
     if (song.id == null) 
       return;
 
-    console.log(song);
-    console.log(song.Danceability);
     total++;
     totalValence += song.Valence;
     totalEnergy += song.Energy;
@@ -166,8 +158,6 @@ var averagePlaylist = (songs) => {
     totalInstrumentalness += song.Instrumentalness;
     totalSpeechiness += song.Speechiness;
   })
-
-  console.log(totalDanceability);
 
   var data = {
     danceability: totalDanceability/total,
@@ -200,8 +190,6 @@ var structurePlaylistSongs = (allSongs, callback) => {
     listSongIDs.push(song.track.id);
     listAlbumIDs.push(song.track.album.id)
   })
-
-  console.log(listSongIDs);
 
   spotifyApi.getAudioFeaturesForTracks(listSongIDs)
   .then(function(data) {
@@ -251,10 +239,7 @@ var structurePlaylistSongs = (allSongs, callback) => {
 // returns list of data points using parameterX and parameterY from song properties
 var songDataPoints = (listSongs, parameterX, parameterY) => {
 
-  console.log(listSongs);
   var dataPoints = [];
-
-  console.log(parameterX);
 
   listSongs.forEach(function(song) {
     if(song.hasOwnProperty(parameterX) && song.hasOwnProperty(parameterY)) {
@@ -276,8 +261,6 @@ var makeScatterPlot = (data) => {
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d,i) {
-      console.log(d);
-      console.log(currentPlaylistSongs[i]);
       return "<span style='color:white'>" + currentPlaylistSongs[i].Name + "</span>" 
               + "<p style='color:white'>" + currentPlaylistSongs[i].Artists[0].name + "</p>"
               + "<p style='color:white'>" + scatterPlotX + ":" + currentPlaylistSongs[i][scatterPlotX] + "</p>"
@@ -329,8 +312,6 @@ var makeScatterPlot = (data) => {
     .transition()
       .duration(750)
 
-  console.log(data);
-
   svg.select(".axisX") // change the y axis
     .transition()
       .duration(750)
@@ -359,7 +340,6 @@ var makeScatterPlot = (data) => {
         makeNovel(selectedSong.id);
       })
       .on('mouseover', function(d,i) {
-        console.log('lol');
         tip.show(d,i);
         d3.select(this)
           .attr("r", 6)
@@ -375,7 +355,6 @@ var makeScatterPlot = (data) => {
         .duration(750)
         .attr("r", 3.5);
 
-  console.log(data);
 }
 
 var appendSelect = (element, axis) => {
@@ -391,7 +370,6 @@ var appendSelect = (element, axis) => {
 
     $(col).on('click', function() {
       $(".selected-parameter" + axis).removeClass("selected-parameter" + axis);
-      console.log(item);
       changeAxis(axis, item);
       col.addClass("selected-parameter" + axis);
     });
