@@ -25,7 +25,7 @@ Attributes from Spotify are used throughout the visualization. Here's a basic ex
 
 ## Current Issues
 
-- ``` 504 Gateway Error ``` : Usually caused by Spotify's servers take too long to respond and/or a shoddy internet connection
+- ``` 504 Gateway Error ``` : Usually caused by Spotify's servers take too long to respond and/or a shoddy internet connection. Try the action again or refresh the page.
 - Things stop working and/or constant 504 error: Authentication token expired. Fix by just going back to home page and relogging
 - Currently, the Song Visualization incorporates song segment data that is above a certain confidence threshold (95%).
 This causes some portions of songs to look misrepresentative of how they actually sound. 
